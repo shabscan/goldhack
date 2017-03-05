@@ -112,11 +112,12 @@ class testHTTPServer_RequestHandler(BaseHTTPRequestHandler):
         print(self.path)
 
         if self.path.endswith(".css"):
+             p = self.path[1:]
              self.send_hdrs(200, 'text/css')
-             self.write_file("dashboard.css")
+             self.write_file(p)
              return
         elif self.path.endswith(".js"):
-             p = self.path.split("/")[-1]
+             p = self.path[1:]
              self.send_hdrs(200, 'text/javascript')
              self.write_file(p)
              return
