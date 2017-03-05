@@ -96,6 +96,10 @@ class testHTTPServer_RequestHandler(BaseHTTPRequestHandler):
         with open(fname) as fd:
             self.wfile.write(fd.read().encode('utf-8'))
  
+    def write_bin_file(self, fname):
+        with open(fname, "rb") as fd:
+            self.wfile.write(fd.read())
+ 
     def read_file(self, fname):
         with open(fname) as fd:
             contents = fd.read()
@@ -121,6 +125,12 @@ class testHTTPServer_RequestHandler(BaseHTTPRequestHandler):
              self.send_hdrs(200, 'text/javascript')
              self.write_file(p)
              return
+        elif self.path.endswith(".png"):
+             p = self.path[1:]
+             self.send_hdrs(200, 'image/png')
+             self.write_bin_file(p)
+             return
+             
              
 
         self.send_hdrs(200, 'text/html')
@@ -155,7 +165,9 @@ class testHTTPServer_RequestHandler(BaseHTTPRequestHandler):
                 try:
                     property_list = find_properties_in_range(prop, radius)
                     property_table = format_properties(property_list)
-                    message = self.read_file("proptable.html").replace("@TABLE@", property_table)
+                    result_descript = "{} properties within {}km (approx) of {}".format(len(property_list), radius, prop)
+                    #message = self.read_file("proptable.html").replace("@TABLE@", property_table)
+                    message = self.read_file("proptable.html").replace("@TABLE@", property_table).replace("@DESC@", result_descript)
                 except PropertyNotFoundException:
                     message = "property %s not found" % prop
                 self.wfile.write(bytes(message, "utf8"))
